@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: postgres_players
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: players_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql/init_tables.sql:/docker-entrypoint-initdb.d/init_tables.sql
+
+  airflow:
+    image: apache/airflow:2.6.3
+    container_name: airflow_players
+    depends_on:
+      - postgres
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/players_db
+      - _AIRFLOW_WWW_USER_USERNAME=admin
+      - _AIRFLOW_WWW_USER_PASSWORD=admin
+    working_dir: /opt/airflow/scripts
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./scripts:/opt/airflow/scripts
+    ports:
+      - "8080:8080"
+    command: standalone
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin_players
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
+# Ajoutez ceci à la fin du fichier, au même niveau que les autres volumes
+volumes:
+  pgadmin_data:
