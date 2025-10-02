@@ -11,7 +11,7 @@ Ce projet implémente un pipeline ETL (Extract, Transform, Load) pour analyser l
 - **Visualisation** via pgAdmin
 
 ## Architecture
-
+```
 project/
 ├── dags/                    # DAGs Airflow
 │   └── etl_players.py       # DAG principal
@@ -24,7 +24,7 @@ project/
 │   └── init_tables.sql      # Schéma de la base de données
 ├── docker-compose.yml       # Configuration Docker
 └── requirements.txt         # Dépendances Python
-
+```
 ## Installation avec Docker
 
 1. Clonez le dépôt :
@@ -87,18 +87,6 @@ ORDER BY avg_winrate DESC;
 ### Prérequis
 - Docker et Docker Compose
 - Python 3.7+
-
-### Variables d'environnement
-
-Créez un fichier `.env` à la racine :
-```
-AIRFLOW_UID=1000
-AIRFLOW_GID=0
-```
-
-## Licence
-
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ## Remerciements
 
