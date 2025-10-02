@@ -23,3 +23,6 @@ var/
 .DS_Store
 .env
 *.sqlite3
+# Fichiers d'environnement
+.env
+*.env
