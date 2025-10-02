@@ -67,19 +67,62 @@ project/
 ## Exemples de requêtes
 
 ```sql
--- Joueurs les plus actifs
-SELECT player_name, hours_of_play_last_month 
-FROM players_clean 
-ORDER BY hours_of_play_last_month DESC 
-LIMIT 10;
+-- Voir les 10 premiers joueurs
+SELECT * FROM players_clean LIMIT 10;
+
+-- Nombre de joueurs par jeu favori
+SELECT 
+    favorite_game, 
+    COUNT(*) as player_count,
+    ROUND(AVG(winrate_pct)::numeric, 2) as avg_winrate
+FROM players_clean
+WHERE favorite_game IS NOT NULL
+GROUP BY favorite_game
+ORDER BY player_count DESC;
+
+-- Joueurs actifs (connectés dans les 30 derniers jours)
+SELECT 
+    player_name,
+    email_clean as email,
+    days_since_last_connexion,
+    winrate_pct
+FROM players_clean
+WHERE is_active_30d = true
+ORDER BY winrate_pct DESC NULLS LAST;
 
 -- Taux de victoire par jeu
 SELECT 
     favorite_game, 
-    ROUND(AVG(winrate_pct), 2) as avg_winrate
+    ROUND(AVG(winrate_pct::numeric), 2) as avg_winrate
 FROM players_clean
+WHERE favorite_game IS NOT NULL
 GROUP BY favorite_game
-ORDER BY avg_winrate DESC;
+ORDER BY avg_winrate DESC NULLS LAST;
+
+-- Version avec gestion des erreurs de conversion
+WITH playtime_data AS (
+    SELECT 
+        player_name,
+        winrate_pct,
+        CASE 
+            WHEN hours_of_play_last_month ~ '^[0-9]+$' THEN hours_of_play_last_month::integer
+            ELSE NULL
+        END as playtime_int
+    FROM players_clean
+)
+SELECT 
+    CASE 
+        WHEN playtime_int IS NULL THEN 'Non renseigné ou invalide'
+        WHEN playtime_int = 0 THEN '0h'
+        WHEN playtime_int < 10 THEN '1-9h'
+        WHEN playtime_int < 50 THEN '10-49h'
+        ELSE '50h+'
+    END as playtime_category,
+    COUNT(*) as player_count,
+    ROUND(AVG(winrate_pct)::numeric, 2) as avg_winrate
+FROM playtime_data
+GROUP BY playtime_category
+ORDER BY player_count DESC;
 ```
 
 ## Développement
