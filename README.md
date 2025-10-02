@@ -124,6 +124,15 @@ FROM playtime_data
 GROUP BY playtime_category
 ORDER BY player_count DESC;
 ```
+## 📸 Captures d'écran
+
+Des captures d'écran des résultats sont disponibles dans le dossier `image_requêtes/` pour une visualisation rapide sans avoir à exécuter les requêtes :
+
+- `airflow.png` : Interface d'administration Airflow avec le DAG en cours d'exécution
+- `docker.png` : Vue d'ensemble des conteneurs en cours d'exécution
+- `players_basic_raw.png` : Aperçu des données brutes des joueurs
+- `table_clean.png` : Vue de la table finale nettoyée
+- `taux-victoire-par-jeu.png` : Visualisation du taux de victoire par jeu
 
 ## Développement
 
